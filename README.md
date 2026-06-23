@@ -1,7 +1,1 @@
 # sportsmate
-
-hi
-
-hello
-
-byasd
