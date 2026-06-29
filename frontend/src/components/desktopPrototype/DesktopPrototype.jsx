@@ -2,6 +2,7 @@ import {
   BarChart3,
   Bike,
   CalendarDays,
+  Camera,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -20,10 +21,12 @@ import {
   MessageCircle,
   Mountain,
   Navigation,
+  Pencil,
   Plus,
   RotateCcw,
   Search,
   Send,
+  ShieldCheck,
   SlidersHorizontal,
   UserRound,
   Users,
@@ -144,7 +147,7 @@ const profileInitial = {
   intro: "러닝 · 농구 · 등산을 좋아해요",
   region: "여의도, 잠실, 관악",
   sports: "러닝, 농구, 등산, 자전거",
-  intensity: "가볍게 오래",
+  intensity: "중급",
   purpose: "운동 메이트 / 친목",
   responseTime: "평균 12분",
   rating: "4.8",
@@ -152,6 +155,9 @@ const profileInitial = {
   meetingCount: "12회",
   img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80"
 };
+
+const PROFILE_INTRO_MAX_LENGTH = 30;
+const PROFILE_INTRO_EMPTY_TEXT = "아직 한 줄 소개가 없습니다.";
 
 function pageTitle(title, desc, showHome = false) {
   return (
@@ -374,6 +380,7 @@ function DesktopPrototype({ page }) {
       <ProfileContent
         profile={profile}
         profileDraft={profileDraft}
+        setProfile={setProfile}
         setProfileDraft={setProfileDraft}
         profileEdit={profileEdit}
         setProfileEdit={setProfileEdit}
@@ -951,75 +958,168 @@ function ScheduleItem({ item, variant = "" }) {
   );
 }
 
-function ProfileContent({ profile, profileDraft, setProfileDraft, profileEdit, setProfileEdit, saveProfile, cancelProfile, openCalendarModal }) {
-  const update = (key, value) => setProfileDraft((current) => ({ ...current, [key]: value }));
+function ProfileContent({ profile, setProfile, setProfileDraft, openCalendarModal }) {
+  const navigate = useNavigate();
+  const [activeActivity, setActiveActivity] = useState("schedule");
+  const [introEdit, setIntroEdit] = useState(false);
+  const [introDraft, setIntroDraft] = useState(profile.intro);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [authPassword, setAuthPassword] = useState("");
+  const changeProfileImage = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setProfile((current) => ({ ...current, img: reader.result }));
+      setProfileDraft((current) => ({ ...current, img: reader.result }));
+    };
+    reader.readAsDataURL(file);
+  };
+  const saveIntro = () => {
+    const nextIntro = introDraft.trim().slice(0, PROFILE_INTRO_MAX_LENGTH);
+    setProfile((current) => ({ ...current, intro: nextIntro }));
+    setProfileDraft((current) => ({ ...current, intro: nextIntro }));
+    setIntroEdit(false);
+  };
+  const openProtectedEdit = () => {
+    setAuthOpen(true);
+    setAuthPassword("");
+  };
+  const confirmProtectedEdit = () => {
+    // 2026-06-29: 실제 비밀번호 검증 API 연결 전까지 PC 프론트 진입 흐름만 mock 처리.
+    setAuthOpen(false);
+    navigate("/mypage/profile");
+  };
   const scheduled = meetings.filter((item) => joinedStates.has(item.state));
+  const hostedMeetings = meetings.filter((item) => item.state === "host");
+  const joinedMeetings = meetings.filter((item) => item.state === "joined");
+  const favoriteMeetings = meetings.filter((item) => item.state === "open").slice(0, 2);
+  const reviewItems = joinedMeetings.slice(0, 2);
+  const activityPanels = {
+    schedule: { label: "다가오는 일정", count: scheduled.length, items: scheduled },
+    hosted: { label: "내가 만든 모임", count: hostedMeetings.length, items: hostedMeetings },
+    joined: { label: "참여 중인 모임", count: joinedMeetings.length, items: joinedMeetings },
+    favorite: { label: "관심 모임", count: favoriteMeetings.length, items: favoriteMeetings },
+    reviews: { label: "후기 관리", count: reviewItems.length, items: reviewItems }
+  };
+  const activityMenu = [
+    { key: "schedule", label: "다가오는 일정", icon: CalendarDays },
+    { key: "hosted", label: "내가 만든 모임", icon: Crown },
+    { key: "joined", label: "참여 중인 모임", icon: Users },
+    { key: "favorite", label: "관심 모임", icon: CircleDot },
+    { key: "reviews", label: "후기 관리", icon: FileText }
+  ];
+  const activePanel = activityPanels[activeActivity];
   return (
     <>
       {pageTitle("내 정보", "프로필을 관리하고 이번 달 운동 일정을 모니터링합니다.")}
       <div className="profile-grid profile-grid--8b">
         <div className="profile-left-stack">
-          {profileEdit ? (
-            <section className="page-card profile-edit-card">
-              <div className="section-head">
-                <h3>프로필 정보 수정</h3>
-              </div>
-              <div className="profile-form">
-                {[
-                  ["nickname", "닉네임"],
-                  ["intro", "한 줄 소개"],
-                  ["region", "선호 지역"],
-                  ["sports", "관심 종목"],
-                  ["intensity", "운동 강도"],
-                  ["purpose", "모임 목적"]
-                ].map(([key, label]) => (
-                  <label key={key}>
-                    {label}
-                    <input value={profileDraft[key]} onChange={(event) => update(key, event.target.value)} />
-                  </label>
-                ))}
-              </div>
-              <div className="profile-edit-actions">
-                <button className="ghost-btn" type="button" onClick={cancelProfile}>취소</button>
-                <button className="primary-small" type="button" onClick={saveProfile}><Check size={14} />저장</button>
-              </div>
-            </section>
-          ) : (
             <section className="profile-card profile-gold-card">
-              <button className="profile-edit-btn" type="button" onClick={() => setProfileEdit(true)}>프로필 수정</button>
+              <button className="profile-edit-btn" type="button" onClick={openProtectedEdit}>프로필 수정</button>
+              <label className="profile-photo-quick" aria-label="프로필 사진 바꾸기">
+                <Camera size={15} />
+                <input type="file" accept="image/*" onChange={changeProfileImage} />
+              </label>
               <img src={profile.img} alt="프로필 이미지" />
               <h2>{profile.nickname}</h2>
-              <p>{profile.intro}</p>
+              {/* 2026-06-29: 한 줄 소개 수정 시 프로필 카드 높이가 출렁이지 않도록 고정 영역 안에서 상태만 전환. */}
+              <div className="profile-intro-slot">
+                {introEdit ? (
+                  <div className="profile-intro-edit">
+                    <input
+                      value={introDraft}
+                      maxLength={PROFILE_INTRO_MAX_LENGTH}
+                      onChange={(event) => setIntroDraft(event.target.value.slice(0, PROFILE_INTRO_MAX_LENGTH))}
+                    />
+                    <div>
+                      <span>{introDraft.length}/{PROFILE_INTRO_MAX_LENGTH}</span>
+                      <button type="button" onClick={saveIntro}>저장</button>
+                      <button type="button" onClick={() => { setIntroDraft(profile.intro); setIntroEdit(false); }}>취소</button>
+                    </div>
+                  </div>
+                ) : (
+                  <button className="profile-intro-quick" type="button" onClick={() => setIntroEdit(true)}>
+                    <span className={!profile.intro ? "is-empty" : ""}>{profile.intro || PROFILE_INTRO_EMPTY_TEXT}</span>
+                    <Pencil size={13} />
+                  </button>
+                )}
+              </div>
               <div className="profile-stats-row">
                 <span><b>{profile.rating}</b><em>평점</em></span>
                 <span><b>{profile.attendanceRate}</b><em>참여율</em></span>
-                <span><b>{profile.meetingCount}</b><em>참여 모임</em></span>
+                <span><b>{profile.meetingCount}</b><em>누적 참여</em></span>
               </div>
             </section>
-          )}
           <section className="page-card profile-preference-card">
             <h3>기본 정보 및 운동 성향</h3>
             <div className="preference-list">
               <p><b>선호 지역</b><span>{profile.region}</span></p>
               <p><b>관심 종목</b><span>{profile.sports}</span></p>
-              <p><b>운동 강도</b><span>{profile.intensity}</span></p>
-              <p><b>모임 목적</b><span>{profile.purpose}</span></p>
-              <p><b>응답 속도</b><span>{profile.responseTime}</span></p>
+              <p><b>운동 수준</b><span>{profile.intensity}</span></p>
             </div>
           </section>
         </div>
         <section className="page-card schedule-list profile-schedule-panel">
+          {/* 2026-06-29: 활동 메뉴는 결과 패널 상단 탭으로 배치해 클릭 위치와 변경 결과를 같은 영역에 둠. */}
+          <div className="profile-activity-tabs">
+            {activityMenu.map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                className={activeActivity === key ? "is-active" : ""}
+                type="button"
+                onClick={() => setActiveActivity(key)}
+              >
+                <Icon size={15} />
+                <span>{label}</span>
+                <em>{activityPanels[key].count}</em>
+              </button>
+            ))}
+          </div>
           <div className="section-head profile-schedule-head">
             <div>
-              <h2>다가오는 일정 <span className="schedule-count-inline">{scheduled.length}개</span></h2>
+              <h2>{activePanel.label} <span className="schedule-count-inline">{activePanel.count}개</span></h2>
             </div>
-            <div className="profile-schedule-actions">
-              <button className="calendar-expand-btn" type="button" onClick={openCalendarModal}><CalendarDays size={15} />달력으로 보기</button>
+            <div className={`profile-schedule-actions ${activeActivity !== "schedule" ? "is-placeholder" : ""}`}>
+              {activeActivity === "schedule" ? (
+                <button className="calendar-expand-btn" type="button" onClick={openCalendarModal}><CalendarDays size={15} />달력으로 보기</button>
+              ) : (
+                <span aria-hidden="true">달력으로 보기</span>
+              )}
             </div>
           </div>
-          {scheduled.map((item) => <ScheduleItem key={item.id} item={item} variant="profile" />)}
+          {activeActivity === "reviews" ? (
+            reviewItems.map((item) => (
+              <article className="profile-review-item" key={item.id}>
+                <div>
+                  <b>{item.title}</b>
+                  <span>{item.time} · {item.place}</span>
+                </div>
+                <button className="ghost-btn" type="button">후기 작성</button>
+              </article>
+            ))
+          ) : (
+            activePanel.items.map((item) => <ScheduleItem key={item.id} item={item} variant="profile" />)
+          )}
+          {!activePanel.items.length && <p className="empty-schedule">표시할 항목이 없습니다.</p>}
         </section>
       </div>
+      {authOpen && (
+        <div className="profile-auth-backdrop" onMouseDown={(event) => event.target === event.currentTarget && setAuthOpen(false)}>
+          <section className="profile-auth-modal">
+            <button className="schedule-modal-close" type="button" onClick={() => setAuthOpen(false)}><X size={18} /></button>
+            <ShieldCheck size={26} />
+            <h2>프로필 수정 확인</h2>
+            <p>중요한 프로필 정보를 수정하기 전에 비밀번호 확인이 필요합니다.</p>
+            <input type="password" value={authPassword} onChange={(event) => setAuthPassword(event.target.value)} placeholder="비밀번호 입력" />
+            <div>
+              <button className="ghost-btn" type="button" onClick={() => setAuthOpen(false)}>취소</button>
+              <button className="primary-small" type="button" onClick={confirmProtectedEdit}>확인</button>
+            </div>
+          </section>
+        </div>
+      )}
     </>
   );
 }

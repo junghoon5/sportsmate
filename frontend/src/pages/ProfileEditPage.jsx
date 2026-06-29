@@ -2,8 +2,10 @@ import { Camera, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/common/Button.jsx";
+import DesktopProfileEdit from "../components/profile/desktop/DesktopProfileEdit.jsx";
 import MobileHeader from "../components/layout/mobile/MobileHeader.jsx";
 import { useAuth } from "../contexts/AuthContext.jsx";
+import { useResponsive } from "../hooks/useResponsive";
 import { userApi } from "../api/userApi";
 import { sportApi } from "../api/sportApi";
 import { koreaRegions } from "../data/koreaRegions";
@@ -14,7 +16,7 @@ const levelOptions = [
   { value: "advanced", label: "상급" }
 ];
 
-function ProfileEditPage() {
+function MobileProfileEditPage() {
   const navigate = useNavigate();
   const { user, setCurrentUser } = useAuth();
   const preferredSportNames = useMemo(
@@ -281,6 +283,11 @@ function ProfileEditPage() {
       </form>
     </>
   );
+}
+
+function ProfileEditPage() {
+  const { isMobile } = useResponsive();
+  return isMobile ? <MobileProfileEditPage /> : <DesktopProfileEdit />;
 }
 
 export default ProfileEditPage;

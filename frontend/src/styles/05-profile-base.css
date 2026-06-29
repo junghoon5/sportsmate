@@ -47,6 +47,36 @@
   padding: 8px 12px;
   font-size: 12px;
   font-weight: 900;
+  text-decoration: none;
+}
+
+.profile-photo-quick {
+  position: absolute;
+  top: 72px;
+  right: calc(50% - 58px);
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.5);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 140ms ease, transform 140ms ease;
+}
+
+.profile-photo-quick:hover {
+  background: rgba(79, 70, 229, 0.85);
+  transform: translateY(-1px);
+}
+
+.profile-photo-quick input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
 }
 
 .profile-card img {
@@ -98,6 +128,159 @@
   display: grid;
   gap: 4px;
   min-width: 0;
+}
+
+.profile-edit-card {
+  display: grid;
+  gap: 18px;
+}
+
+.profile-form {
+  display: grid;
+  gap: 18px;
+}
+
+/* 2026-06-29: 프로필 수정 화면을 사진/선택형 입력 중심의 프론트 프로토타입으로 정리. */
+.profile-image-edit {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #f8fafc;
+  padding: 16px;
+}
+
+.profile-image-edit img {
+  width: 96px;
+  height: 96px;
+  border: 4px solid #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  object-fit: cover;
+}
+
+.profile-image-edit div {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.profile-image-edit strong,
+.profile-form-section > strong {
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.profile-image-edit p {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.profile-image-upload {
+  position: relative;
+  display: inline-flex;
+  width: fit-content;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+  background: #eef2ff;
+  color: #4f46e5;
+  padding: 0 13px;
+  font-size: 12px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.profile-image-upload input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.profile-form-section {
+  display: grid;
+  gap: 12px;
+}
+
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.profile-form label,
+.profile-choice-wrap {
+  display: grid;
+  gap: 7px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.profile-form input,
+.profile-form select,
+.profile-form textarea {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 10px 12px;
+  outline: none;
+  font-size: 13px;
+  font-weight: 800;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.profile-form textarea {
+  min-height: 78px;
+  resize: vertical;
+}
+
+.profile-form input:focus,
+.profile-form select:focus,
+.profile-form textarea:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
+}
+
+.profile-form-wide {
+  grid-column: 1 / -1;
+}
+
+.profile-choice-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.profile-choice-grid button {
+  min-height: 34px;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #475569;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.profile-choice-grid button.is-active {
+  border-color: #4f46e5;
+  background: #4f46e5;
+  color: #ffffff;
 }
 
 .profile-edit-form {
@@ -184,8 +367,1047 @@
   white-space: nowrap;
 }
 
+/* 2026-06-29: PC 내 정보 활동 메뉴를 오른쪽 결과 패널 상단 탭으로 통합. */
+.profile-activity-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  overflow: hidden;
+  gap: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0;
+  margin-bottom: 2px;
+}
+
+.profile-activity-tabs button {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  border-right: 1px solid #e2e8f0;
+  border-radius: 0;
+  background: transparent;
+  color: #475569;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+  transition: border-color 140ms ease, color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.profile-activity-tabs button:last-child {
+  border-right: 0;
+}
+
+.profile-activity-tabs button:hover {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.profile-activity-tabs button.is-active {
+  background: #ffffff;
+  color: #4f46e5;
+  box-shadow: inset 0 3px 0 #4f46e5;
+}
+
+.profile-activity-tabs button.is-active::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 1px;
+  background: #ffffff;
+  content: "";
+}
+
+.profile-activity-tabs span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-activity-tabs em {
+  flex: 0 0 auto;
+  min-width: 18px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #64748b;
+  padding: 2px 5px;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.profile-activity-tabs button.is-active em {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.profile-review-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 16px;
+}
+
+.profile-review-item > div {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.profile-review-item b,
+.profile-review-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-review-item b {
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.profile-review-item span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.profile-intro-slot {
+  display: grid;
+  width: 100%;
+  min-height: 82px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.profile-intro-quick {
+  position: relative;
+  display: block;
+  width: min(100%, 250px);
+  min-height: 26px;
+  margin: 0 auto;
+  border: 0;
+  background: transparent;
+  color: rgba(255,255,255,0.78);
+  padding: 0 24px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.5;
+  text-align: center;
+  cursor: pointer;
+}
+
+.profile-intro-quick span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-intro-quick span.is-empty {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.profile-intro-quick:hover {
+  color: #ffffff;
+}
+
+.profile-intro-quick svg {
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  opacity: 0.74;
+  transform: translateY(-50%);
+}
+
+.profile-intro-quick:hover svg {
+  opacity: 1;
+}
+
+.profile-intro-edit {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+}
+
+.profile-intro-edit input {
+  min-width: 0;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  padding: 0 10px;
+  outline: none;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.profile-intro-edit span {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.profile-intro-edit > div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.profile-intro-edit button {
+  min-height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  padding: 0 9px;
+  font-size: 11px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.profile-auth-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.42);
+  padding: 24px;
+}
+
+.profile-auth-modal {
+  position: relative;
+  display: grid;
+  width: min(420px, 100%);
+  gap: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 26px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+}
+
+.profile-auth-modal > svg {
+  color: #4f46e5;
+}
+
+.profile-auth-modal h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 850;
+}
+
+.profile-auth-modal p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1.5;
+}
+
+.profile-auth-modal input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 0 12px;
+  outline: none;
+}
+
+.profile-auth-modal label {
+  display: grid;
+  gap: 7px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.profile-auth-modal input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
+}
+
+.profile-auth-modal > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* 2026-06-29: PC 프로필 수정은 마이페이지 확장형이 아닌 별도 페이지로 구성. */
+.desktop-profile-edit {
+  display: grid;
+  gap: 22px;
+}
+
+.desktop-profile-edit__title {
+  align-items: center;
+}
+
+.desktop-profile-edit__title > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.desktop-profile-edit__title .ghost-btn,
+.desktop-profile-edit__title .primary-small,
+.desktop-region-picker .primary-small {
+  transition: border-color 140ms ease, color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.desktop-profile-edit__title .ghost-btn,
+.desktop-profile-edit__title .primary-small {
+  min-width: 74px;
+  min-height: 40px;
+  border-radius: 10px;
+  padding: 0 14px;
+  line-height: 1;
+}
+
+.desktop-profile-edit__grid {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 22px;
+  align-items: stretch;
+}
+
+.desktop-profile-preview {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: linear-gradient(150deg, #111827, #312e81 58%, #4338ca);
+  color: #ffffff;
+  text-align: center;
+}
+
+.desktop-profile-preview img {
+  width: 112px;
+  height: 112px;
+  border: 4px solid #fbbf24;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.desktop-profile-preview h2 {
+  width: 100%;
+  margin: 18px 0 0;
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.desktop-profile-preview p {
+  width: 100%;
+  margin: 7px 0 0;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.desktop-profile-edit-panel {
+  display: grid;
+  gap: 20px;
+  padding: 26px 24px 30px;
+}
+
+.desktop-profile-edit-panel .section-head {
+  margin-bottom: 0;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 14px;
+}
+
+.desktop-profile-edit-panel .section-head span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.desktop-profile-edit-panel .section-head h2 {
+  font-weight: 850;
+}
+
+.desktop-map-toggle {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #4f46e5;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: border-color 140ms ease, color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.desktop-map-toggle:hover {
+  border-color: #c7d2fe;
+  background: #eef2ff;
+  transform: translateY(-1px);
+}
+
+.desktop-profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.desktop-profile-form-grid label {
+  display: grid;
+  gap: 8px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* 2026-06-29: 기본 정보 카드의 닉네임/이메일을 세로 배치해 읽기 흐름과 수정 가능 항목을 분리. */
+.desktop-basic-info-grid {
+  grid-template-columns: minmax(0, 560px);
+  gap: 16px;
+}
+
+.desktop-basic-info-grid label {
+  max-width: 560px;
+}
+
+.desktop-basic-info-grid label:nth-child(2) {
+  max-width: 464px;
+}
+
+.desktop-nickname-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 88px;
+  gap: 8px;
+  align-items: start;
+}
+
+.desktop-nickname-row .desktop-edit-input,
+.desktop-nickname-row input,
+.desktop-nickname-row button {
+  height: 44px;
+}
+
+.desktop-nickname-row button {
+  align-self: start;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #4f46e5;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.desktop-nickname-row button:hover {
+  border-color: #c7d2fe;
+  background: #eef2ff;
+  transform: translateY(-1px);
+}
+
+.nickname-check {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 650;
+}
+
+.nickname-check.ok {
+  color: #16a34a;
+}
+
+.nickname-check.warn {
+  color: #dc2626;
+}
+
+.desktop-readonly-field {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #475569;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.desktop-security-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 88px;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 16px;
+}
+
+.desktop-account-security-panel {
+  gap: 0;
+  padding-bottom: 24px;
+}
+
+.desktop-account-security-panel .desktop-security-section {
+  grid-template-columns: minmax(0, 1fr) 116px;
+  padding: 16px 0;
+}
+
+.desktop-account-security-panel .desktop-security-section:first-of-type {
+  border-top: 0;
+}
+
+.desktop-security-section span {
+  display: grid;
+  gap: 4px;
+}
+
+.desktop-security-section strong {
+  color: #475569;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.desktop-security-section small {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.desktop-security-section button {
+  border: 0;
+  background: transparent;
+  color: #4f46e5;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 750;
+  text-align: center;
+  cursor: pointer;
+}
+
+.desktop-security-section button:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.desktop-security-section--danger strong {
+  color: #64748b;
+}
+
+.desktop-security-section--danger button {
+  color: #dc2626;
+  font-weight: 650;
+}
+
+.danger-small {
+  border-color: #dc2626;
+  background: #dc2626;
+}
+
+.danger-small:hover {
+  border-color: #b91c1c;
+  background: #b91c1c;
+}
+
+.desktop-edit-input {
+  position: relative;
+  display: block;
+}
+
+.desktop-edit-input svg {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  color: #94a3b8;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.desktop-edit-input--textarea svg {
+  top: 16px;
+  transform: none;
+}
+
+.desktop-profile-form-grid input,
+.desktop-profile-form-grid select,
+.desktop-profile-form-grid textarea {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 10px 36px 10px 12px;
+  outline: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.desktop-profile-form-grid input:hover,
+.desktop-profile-form-grid select:hover,
+.desktop-profile-form-grid textarea:hover,
+.desktop-region-picker select:hover,
+.desktop-profile-selected-sports select:hover {
+  border-color: #a5b4fc;
+  background-color: #f8fafc;
+}
+
+.desktop-profile-form-grid select,
+.desktop-region-picker select,
+.desktop-profile-selected-sports select {
+  appearance: none;
+  background-color: #ffffff;
+  background-image: linear-gradient(45deg, transparent 50%, #64748b 50%), linear-gradient(135deg, #64748b 50%, transparent 50%);
+  background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%;
+  background-repeat: no-repeat;
+  background-size: 5px 5px;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.desktop-profile-form-grid textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.desktop-profile-form-grid input:focus,
+.desktop-profile-form-grid select:focus,
+.desktop-profile-form-grid textarea:focus,
+.desktop-profile-selected-sports select:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
+}
+
+.desktop-profile-form-grid select option,
+.desktop-region-picker select option,
+.desktop-profile-selected-sports select option {
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.desktop-profile-form-wide {
+  grid-column: 1 / -1;
+}
+
+.desktop-region-picker {
+  display: grid;
+  grid-template-columns: minmax(360px, 560px) 92px max-content;
+  gap: 12px;
+  align-items: end;
+  justify-content: start;
+}
+
+.desktop-region-picker label,
+.desktop-region-search-field {
+  display: grid;
+  gap: 8px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.desktop-region-search-box {
+  position: relative;
+  display: block;
+}
+
+.desktop-region-search-box > svg {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  color: #94a3b8;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.desktop-region-search-box input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 10px 12px 10px 38px;
+  outline: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+}
+
+.desktop-region-search-box input:hover {
+  border-color: #a5b4fc;
+  background: #f8fafc;
+}
+
+.desktop-region-search-box input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
+}
+
+.desktop-region-picker select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  color: #0f172a;
+  padding: 10px 12px;
+  outline: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.desktop-region-picker select:disabled {
+  background-color: #f8fafc;
+  color: #94a3b8;
+}
+
+.desktop-region-picker select:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
+}
+
+.desktop-region-picker .primary-small {
+  width: 92px;
+  min-width: 92px;
+  height: 44px;
+  min-height: 44px;
+  border-radius: 12px;
+}
+
+.desktop-region-picker .desktop-map-toggle {
+  height: 44px;
+  min-height: 44px;
+  min-width: 138px;
+  padding: 0 16px;
+}
+
+.desktop-region-picker .primary-small:hover,
+.desktop-profile-edit__title .primary-small:hover {
+  border-color: #4338ca;
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+.desktop-profile-edit__title .ghost-btn:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.desktop-region-results {
+  display: grid;
+  max-width: 720px;
+  gap: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fafc;
+  padding: 10px;
+}
+
+.desktop-region-results button {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #334155;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: border-color 140ms ease, color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.desktop-region-results button:hover {
+  border-color: #c7d2fe;
+  background: #eef2ff;
+  color: #4f46e5;
+  transform: translateY(-1px);
+}
+
+.desktop-region-selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 42px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fafc;
+  padding: 10px;
+}
+
+.desktop-region-selected button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #c7d2fe;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4f46e5;
+  padding: 0 11px;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.desktop-region-selected button:hover {
+  border-color: #4f46e5;
+  background: #e0e7ff;
+  transform: translateY(-1px);
+}
+
+.desktop-region-selected span {
+  display: inline-flex;
+  align-items: center;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.desktop-profile-map-preview {
+  position: relative;
+  min-height: 240px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background:
+    linear-gradient(90deg, rgba(148, 163, 184, 0.16) 1px, transparent 1px),
+    linear-gradient(rgba(148, 163, 184, 0.16) 1px, transparent 1px),
+    radial-gradient(circle at 28% 24%, rgba(79, 70, 229, 0.16), transparent 18%),
+    radial-gradient(circle at 68% 62%, rgba(14, 165, 233, 0.16), transparent 18%),
+    #f8fafc;
+  background-size: 44px 44px, 44px 44px, auto, auto, auto;
+}
+
+.desktop-profile-map-preview .map-current-label {
+  top: 16px;
+  left: 16px;
+}
+
+.desktop-profile-map-preview .map-pin.p1 {
+  left: 28%;
+  top: 36%;
+}
+
+.desktop-profile-map-preview .map-pin.p2 {
+  left: 58%;
+  top: 42%;
+  border-color: #0ea5e9;
+  color: #0ea5e9;
+}
+
+.desktop-profile-map-preview .map-pin.p3 {
+  left: 46%;
+  top: 68%;
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+.desktop-profile-sport-section {
+  display: grid;
+  gap: 12px;
+}
+
+.desktop-level-grid {
+  max-width: 360px;
+}
+
+.desktop-profile-sport-section > strong {
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.desktop-subsection-title {
+  display: block;
+  margin-top: 2px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.desktop-sport-category-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.desktop-sport-category-tabs button {
+  min-height: 38px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #475569;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: border-color 140ms ease, color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.desktop-sport-category-tabs button:hover {
+  border-color: #c7d2fe;
+  background: #eef2ff;
+  color: #4f46e5;
+  transform: translateY(-1px);
+}
+
+.desktop-sport-category-tabs button.is-active {
+  border-color: #4f46e5;
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.desktop-sport-category-tabs button.is-active:hover {
+  border-color: #4f46e5;
+  background: #e0e7ff;
+  color: #4f46e5;
+}
+
+.desktop-profile-sport-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 44px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fafc;
+  padding: 12px;
+}
+
+.desktop-profile-sport-grid button,
+.desktop-profile-selected-sports button {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #475569;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: border-color 140ms ease, color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.desktop-profile-sport-grid button:hover,
+.desktop-profile-selected-sports button:hover {
+  border-color: #c7d2fe;
+  background: #eef2ff;
+  color: #4f46e5;
+  transform: translateY(-1px);
+}
+
+.desktop-profile-sport-grid button.is-active {
+  border-color: #4f46e5;
+  background: #4f46e5;
+  color: #ffffff;
+}
+
+.desktop-profile-sport-grid button.is-active:hover {
+  border-color: #4338ca;
+  background: #4338ca;
+  color: #ffffff;
+}
+
+.desktop-profile-selected-sports {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.desktop-profile-selected-sports > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 82px;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 8px;
+}
+
+.desktop-profile-selected-sports button {
+  min-width: 0;
+  justify-content: space-between;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.desktop-profile-selected-sports select {
+  min-width: 0;
+  height: 36px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  color: #0f172a;
+  padding: 0 26px 0 8px;
+  outline: none;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.desktop-profile-form-grid select,
+.desktop-region-picker select,
+.desktop-profile-selected-sports select {
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 14px 14px;
+}
+
 .profile-schedule-panel {
   min-width: 0;
+  min-height: 650px;
 }
 
 .profile-schedule-head {
@@ -230,6 +1452,19 @@
 .profile-schedule-actions {
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.profile-schedule-actions.is-placeholder {
+  visibility: hidden;
+}
+
+.profile-schedule-actions.is-placeholder span {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  padding: 0 13px;
+  font-size: 12px;
+  font-weight: 850;
 }
 
 .schedule-item--profile {
