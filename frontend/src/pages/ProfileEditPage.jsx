@@ -5,7 +5,6 @@ import Button from "../components/common/Button.jsx";
 import DesktopProfileEdit from "../components/profile/desktop/DesktopProfileEdit.jsx";
 import MobileHeader from "../components/layout/mobile/MobileHeader.jsx";
 import { useAuth } from "../contexts/AuthContext.jsx";
-import { useResponsive } from "../hooks/useResponsive";
 import { userApi } from "../api/userApi";
 import { sportApi } from "../api/sportApi";
 import { locationApi } from "../api/locationApi";
