@@ -7,7 +7,7 @@
       "destination": "/api/index.py"
     },
     {
-      "source": "/((?!api/.*).*)",
+      "source": "/((?!api/.*|assets/.*|images/.*|img/.*|manifest.json|sw.js|favicon.ico).*)",
       "destination": "/index.html"
     }
   ]
