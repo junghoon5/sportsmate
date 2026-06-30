@@ -2,6 +2,7 @@ import json
 import re
 import secrets
 import string
+
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -162,17 +163,35 @@ def login_with_supabase(data):
     app_metadata = supabase_user.get("app_metadata") or {}
     provider = app_metadata.get("provider") or data.get("provider") or "supabase"
     provider_id = supabase_user.get("id")
+
     nickname = metadata.get("nickname") or metadata.get("name") or metadata.get("full_name") or email.split("@")[0]
     name = metadata.get("name") or metadata.get("full_name") or nickname
-    avatar_url = metadata.get("avatar_url") or metadata.get("picture")
 
-    user = User.query.filter_by(email=email).first()
+    avatar_url = metadata.get("avatar_url") or metadata.get("picture")
+    phone_number = normalize_phone_number(metadata.get("phone_number") or supabase_user.get("phone"))
+
+    user = User.query.filter_by(auth_user_id=provider_id).first() if provider_id else None
     if not user:
-        user = User(email=email, name=name, nickname=nickname, user_tag=generate_user_tag(), provider=provider, provider_id=provider_id, profile_image_url=avatar_url)
-        user.set_password(f"supabase:{provider}:{provider_id}")
+        user = User.query.filter_by(email=email).first()
+    if not user:
+        is_new_user = True
+        user = User(
+            auth_user_id=provider_id,
+            email=email,
+            name=name,
+            phone_number=phone_number,
+            nickname=nickname,
+            provider=provider,
+            provider_id=provider_id,
+            profile_image_url=avatar_url
+        )
         user.profile = UserProfile()
         db.session.add(user)
     else:
+        is_new_user = False
+        user.auth_user_id = user.auth_user_id or provider_id
+        user.name = user.name or name
+        user.phone_number = phone_number if phone_number is not None else user.phone_number
         user.provider = provider
         user.provider_id = provider_id or user.provider_id
         user.nickname = user.nickname or nickname
@@ -185,7 +204,10 @@ def login_with_supabase(data):
         raise ValueError("비활성화된 계정입니다.")
 
     db.session.commit()
-    return build_auth_response(user)
+    response = build_auth_response(user)
+    response["is_new_user"] = is_new_user
+    response["profile_complete"] = is_profile_complete(user)
+    return response
 
 
 def verify_supabase_user(access_token):
