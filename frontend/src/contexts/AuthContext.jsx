@@ -1,8 +1,17 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { authApi } from "../api/authApi";
-import { supabase } from "../api/supabaseClient";
+import { isSupabaseConfigured, supabase } from "../api/supabaseClient";
 
 const AuthContext = createContext(null);
+
+const SUPABASE_CONFIG_ERROR = "Supabase 환경변수가 설정되지 않아 인증 기능을 사용할 수 없습니다.";
+
+function requireSupabase() {
+  if (!isSupabaseConfigured || !supabase) {
+    throw new Error(SUPABASE_CONFIG_ERROR);
+  }
+  return supabase;
+}
 
 function getAuthRedirectUrl(path = "/auth/callback") {
   return `${window.location.origin}${path}`;
@@ -56,6 +65,15 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let mounted = true;
 
+    if (!isSupabaseConfigured || !supabase) {
+      setSession(null);
+      setUser(null);
+      setLoading(false);
+      return () => {
+        mounted = false;
+      };
+    }
+
     supabase.auth.getSession().then(async ({ data }) => {
       if (!mounted) return;
       const currentSession = data.session;
@@ -100,7 +118,8 @@ export function AuthProvider({ children }) {
       isAuthenticated: Boolean(session?.user),
       async login(payload) {
         localStorage.removeItem("sportsmate_post_auth_redirect");
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const client = requireSupabase();
+        const { data, error } = await client.auth.signInWithPassword({
           email: payload.email,
           password: payload.password
         });
@@ -110,7 +129,8 @@ export function AuthProvider({ children }) {
       },
       async register(payload) {
         localStorage.removeItem("sportsmate_post_auth_redirect");
-        const { data, error } = await supabase.auth.signUp({
+        const client = requireSupabase();
+        const { data, error } = await client.auth.signUp({
           email: payload.email,
           password: payload.password,
           options: {
@@ -130,7 +150,8 @@ export function AuthProvider({ children }) {
       },
 
       async requestSignupEmailVerification(email) {
-        const { data, error } = await supabase.auth.signInWithOtp({
+        const client = requireSupabase();
+        const { data, error } = await client.auth.signInWithOtp({
           email,
           options: {
             emailRedirectTo: getAuthRedirectUrl("/register"),
@@ -141,14 +162,15 @@ export function AuthProvider({ children }) {
         return data;
       },
       async registerVerifiedEmail(payload) {
-        const { data: sessionData } = await supabase.auth.getSession();
+        const client = requireSupabase();
+        const { data: sessionData } = await client.auth.getSession();
         const currentSession = sessionData.session;
         const currentUser = currentSession?.user;
         const confirmedAt = currentUser?.email_confirmed_at || currentUser?.confirmed_at;
         if (!currentUser || currentUser.email?.toLowerCase() !== payload.email.toLowerCase() || !confirmedAt) {
-          throw new Error("\uc774\uba54\uc77c \uc778\uc99d\uc744 \uc644\ub8cc\ud574 \uc8fc\uc138\uc694.");
+          throw new Error("이메일 인증을 완료해주세요.");
         }
-        const { data, error } = await supabase.auth.updateUser({
+        const { data, error } = await client.auth.updateUser({
           password: payload.password,
           data: {
             name: payload.name,
@@ -162,7 +184,8 @@ export function AuthProvider({ children }) {
       },
       async socialLogin(provider) {
         localStorage.removeItem("sportsmate_post_auth_redirect");
-        const { data, error } = await supabase.auth.signInWithOAuth({
+        const client = requireSupabase();
+        const { data, error } = await client.auth.signInWithOAuth({
           provider,
           options: {
             redirectTo: getAuthRedirectUrl("/auth/callback")
@@ -172,7 +195,8 @@ export function AuthProvider({ children }) {
         return data;
       },
       async resendSignupEmail(email) {
-        const { data, error } = await supabase.auth.resend({
+        const client = requireSupabase();
+        const { data, error } = await client.auth.resend({
           type: "signup",
           email,
           options: {
@@ -183,7 +207,9 @@ export function AuthProvider({ children }) {
         return data;
       },
       async logout() {
-        await supabase.auth.signOut();
+        if (isSupabaseConfigured && supabase) {
+          await supabase.auth.signOut();
+        }
         localStorage.removeItem("sportsmate_token");
         setUser(null);
         setSession(null);
