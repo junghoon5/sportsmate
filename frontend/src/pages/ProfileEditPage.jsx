@@ -10,7 +10,6 @@ import { userApi } from "../api/userApi";
 import { sportApi } from "../api/sportApi";
 import { locationApi } from "../api/locationApi";
 import { koreaRegions } from "../data/koreaRegions";
-import { useResponsive } from "../hooks/useResponsive";
 
 const T = {
   title: "\ud504\ub85c\ud544 \uc124\uc815",
@@ -63,8 +62,6 @@ const fallbackSportGroups = [
 ];
 
 
-function MobileProfileEditPage() {
-
 const fallbackCategories = fallbackSportGroups.map((group) => group.category);
 const fallbackSports = fallbackSportGroups.flatMap((group) =>
   group.sports.map((name, index) => ({
@@ -94,7 +91,7 @@ function splitSports(value) {
     .filter(Boolean);
 }
 
-function ProfileEditPage() {
+function MobileProfileEditPage() {
 
   const navigate = useNavigate();
   const { isMobile } = useResponsive();
