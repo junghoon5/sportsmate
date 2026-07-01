@@ -1,5 +1,5 @@
 const CACHE_NAME = "sportsmate-v2";
-const STATIC_ASSETS = ["/manifest.json", "/images/logo.png"];
+const STATIC_ASSETS = ["/", "/manifest.json", "/images/logo.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS)));
@@ -18,13 +18,18 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
-  if (event.request.mode === "navigate") {
-    event.respondWith(fetch(event.request));
-    return;
-  }
+  const request = event.request;
+  const isNavigation = request.mode === "navigate";
 
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    caches.match(request).then((cached) => {
+      if (cached) return cached;
+      return fetch(request).catch(() => {
+        if (isNavigation) {
+          return caches.match("/");
+        }
+        throw new Error("Network request failed.");
+      });
+    })
   );
 });
-
