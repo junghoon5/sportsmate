@@ -5,20 +5,30 @@ FROM node:22-alpine AS frontend-builder
 
 WORKDIR /app
 
-# Copy the frontend source code
-COPY frontend/ ./frontend/
+# Copy the frontend package files & install dependencies
+COPY frontend/package*.json ./frontend/
+RUN cd frontend && npm install
 
-# Install dependencies and build the frontend
-# Using npm install instead of ci to be safe if package-lock is out of sync
-RUN cd frontend && npm install && npm run build
+# Copy frontend source code and build
+COPY frontend/ ./frontend/
+ARG VITE_API_BASE_URL=/api/v1
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+RUN cd frontend && npm run build
 
 # ==========================================
 # Stage 2: Build the Python backend and serve
 # ==========================================
 FROM python:3.12-slim
 
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
 # Install Nginx and Supervisor for process management
-RUN apt-get update && apt-get install -y nginx supervisor && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    nginx \
+    supervisor \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -35,12 +45,12 @@ COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
 # ------------------------------------------
 # Configure Nginx
 # ------------------------------------------
-# This configuration sets up Nginx to serve the React SPA and proxy /api/ requests to Gunicorn
 RUN echo 'server {\n\
     listen 80;\n\
     server_name _;\n\
     root /usr/share/nginx/html;\n\
     index index.html;\n\
+    client_max_body_size 20M;\n\
 \n\
     # SPA fallback for React Router\n\
     location / {\n\
@@ -54,13 +64,14 @@ RUN echo 'server {\n\
         proxy_set_header X-Real-IP $remote_addr;\n\
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n\
         proxy_set_header X-Forwarded-Proto $scheme;\n\
+        proxy_read_timeout 300s;\n\
+        proxy_connect_timeout 300s;\n\
     }\n\
 }' > /etc/nginx/sites-available/default
 
 # ------------------------------------------
 # Configure Supervisor
 # ------------------------------------------
-# Supervisor runs both Nginx and Gunicorn in the foreground within the same container
 RUN echo '[supervisord]\n\
 nodaemon=true\n\
 \n\
@@ -75,7 +86,7 @@ stderr_logfile_maxbytes=0\n\
 \n\
 [program:gunicorn]\n\
 directory=/app/backend\n\
-command=gunicorn -b 127.0.0.1:5000 run:app\n\
+command=gunicorn -b 127.0.0.1:5000 --workers 4 --threads 2 --timeout 120 run:app\n\
 autostart=true\n\
 autorestart=true\n\
 stdout_logfile=/dev/stdout\n\
