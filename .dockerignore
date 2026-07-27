@@ -10,3 +10,7 @@ frontend/dist/
 instance/
 backend/sportsmate.db
 backend/chat_mutes.db
+.env
+.env.*
+**/.env
+**/.env.*
